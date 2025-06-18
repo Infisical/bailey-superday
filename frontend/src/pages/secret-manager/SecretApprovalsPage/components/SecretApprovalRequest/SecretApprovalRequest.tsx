@@ -6,7 +6,7 @@ import {
   faCodeBranch
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { formatDistance } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -70,6 +70,7 @@ export const SecretApprovalRequest = () => {
   const search = useSearch({
     from: ROUTE_PATHS.SecretManager.ApprovalPage.id
   });
+  const navigate = useNavigate();
 
   const { permission } = useProjectPermission();
   const { data: members } = useGetWorkspaceUsers(workspaceId);
@@ -234,7 +235,17 @@ export const SecretApprovalRequest = () => {
                       className="flex flex-col px-8 py-4 hover:bg-mineshaft-700"
                       role="button"
                       tabIndex={0}
-                      onClick={() => setSelectedApprovalId(secretApproval.id)}
+                      onClick={() => {
+                        setSelectedApprovalId(secretApproval.id);
+                        navigate({
+                          to: "." as const,
+                          search: (old: any) => ({
+                            ...old,
+                            requestId: secretApproval.id
+                          }),
+                          replace: true
+                        });
+                      }}
                       onKeyDown={(evt) => {
                         if (evt.key === "Enter") setSelectedApprovalId(secretApproval.id);
                       }}
